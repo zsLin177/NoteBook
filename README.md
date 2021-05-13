@@ -1,2 +1,2 @@
 # My NoteBook
- some notes between learning
+ some notes during learning
