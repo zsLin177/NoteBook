@@ -15,7 +15,6 @@
   `torch.nn.``MultiLabelSoftMarginLoss`(*weight: Optional[torch.Tensor] = None*, *size_average=None*, *reduce=None*, *reduction: str = 'mean'*)
 
   
-  
 ## 数据的处理，加载
 
 * Field(supar)
@@ -33,7 +32,7 @@
   EDGE = ChartField('edges', use_vocab=False, fn=CoNLL.get_edges)
   LABEL = ChartField('labels', fn=CoNLL.get_labels)
   # field.build(dataset):从dataset建立一个词典
-FEAT.build(train)
+  FEAT.build(train)
   
   ```
   
@@ -353,4 +352,12 @@ tensor([0, 2])
 tensor([[1., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
         [0., 0., 1., 0., 0., 0., 0., 0., 0., 0.]])
 ```
-
+---
+# 得到向量中值为某个值的索引
+* 先mask.eq(value)
+```python
+torch.nonzero(torch.tensor([1, 1, 1, 0, 1]), as_tuple=True)
+```
+---
+# torch.unbind(dim=0)
+用来将原来的tensor按照维度dim拆分成由小tensor组成的tuple
