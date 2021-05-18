@@ -356,7 +356,7 @@ tensor([[1., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
 # 得到向量中值为某个值的索引
 * 先mask.eq(value)
 ```python
-torch.nonzero(torch.tensor([1, 1, 1, 0, 1]), as_tuple=True)
+torch.nonzero(source==target)
 ```
 ---
 # torch.unbind(dim=0)
