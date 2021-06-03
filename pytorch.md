@@ -391,3 +391,69 @@ torch.nonzero(source==target)
 ---
 # torch.unbind(dim=0)
 用来将原来的tensor按照维度dim拆分成由小tensor组成的tuple
+
+---
+# 上三角矩阵的一些操作
+```python
+>>> a=torch.ones((2,6,6)).bool()
+>>> a.triu()
+tensor([[[ True,  True,  True,  True,  True,  True],
+         [False,  True,  True,  True,  True,  True],
+         [False, False,  True,  True,  True,  True],
+         [False, False, False,  True,  True,  True],
+         [False, False, False, False,  True,  True],
+         [False, False, False, False, False,  True]],
+
+        [[ True,  True,  True,  True,  True,  True],
+         [False,  True,  True,  True,  True,  True],
+         [False, False,  True,  True,  True,  True],
+         [False, False, False,  True,  True,  True],
+         [False, False, False, False,  True,  True],
+         [False, False, False, False, False,  True]]])
+>>> a.triu(1)
+tensor([[[False,  True,  True,  True,  True,  True],
+         [False, False,  True,  True,  True,  True],
+         [False, False, False,  True,  True,  True],
+         [False, False, False, False,  True,  True],
+         [False, False, False, False, False,  True],
+         [False, False, False, False, False, False]],
+
+        [[False,  True,  True,  True,  True,  True],
+         [False, False,  True,  True,  True,  True],
+         [False, False, False,  True,  True,  True],
+         [False, False, False, False,  True,  True],
+         [False, False, False, False, False,  True],
+         [False, False, False, False, False, False]]])
+```
+# 保留长度<=3的span
+```python
+>>> b=a.tril(3)
+>>> b
+tensor([[[ True,  True,  True,  True, False, False],
+         [ True,  True,  True,  True,  True, False],
+         [ True,  True,  True,  True,  True,  True],
+         [ True,  True,  True,  True,  True,  True],
+         [ True,  True,  True,  True,  True,  True],
+         [ True,  True,  True,  True,  True,  True]],
+
+        [[ True,  True,  True,  True, False, False],
+         [ True,  True,  True,  True,  True, False],
+         [ True,  True,  True,  True,  True,  True],
+         [ True,  True,  True,  True,  True,  True],
+         [ True,  True,  True,  True,  True,  True],
+         [ True,  True,  True,  True,  True,  True]]])
+ >>> a&b
+tensor([[[ True,  True,  True,  True, False, False],
+         [False,  True,  True,  True,  True, False],
+         [False, False,  True,  True,  True,  True],
+         [False, False, False,  True,  True,  True],
+         [False, False, False, False,  True,  True],
+         [False, False, False, False, False,  True]],
+
+        [[ True,  True,  True,  True, False, False],
+         [False,  True,  True,  True,  True, False],
+         [False, False,  True,  True,  True,  True],
+         [False, False, False,  True,  True,  True],
+         [False, False, False, False,  True,  True],
+         [False, False, False, False, False,  True]]])
+```
