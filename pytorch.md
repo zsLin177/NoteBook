@@ -457,3 +457,5 @@ tensor([[[ True,  True,  True,  True, False, False],
          [False, False, False, False,  True,  True],
          [False, False, False, False, False,  True]]])
 ```
+# 取最大的k个值
+* torch.topk(input, k, dim)
