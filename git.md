@@ -16,3 +16,6 @@ git branch -r
 
 ### 拉取远程分支并在本地创建新分支
 git checkout -b dev origin/dev
+
+### 删除本地分支
+git branch -d test
