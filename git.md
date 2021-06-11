@@ -8,5 +8,11 @@
 	ssh-add ~/.ssh/id_rsa
 
 ### 创建新的分支
-* 创建并切换到新分支
+* 创建并切换到新分支，新分支的代码就是当前分支的代码
 git checkout -b span-based
+
+### 列出所有远程分支
+git branch -r
+
+### 拉取远程分支并在本地创建新分支
+git checkout -b dev origin/dev
