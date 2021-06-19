@@ -7,4 +7,4 @@ ln -s src_path tgt_path
 ## 查找
 * find /tmp -atime +21 -and -size +10G
 * find . -type f -name '*.php' | xargs grep "include"
-* find /var/logs -maxdepth 1 -mtime +7 -ok rm {} \;
+* find /var/logs -maxdepth 1 -mtime +7 -ok rm {} \\;
