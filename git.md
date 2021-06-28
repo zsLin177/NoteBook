@@ -19,3 +19,10 @@ git checkout -b dev origin/dev
 
 ### 删除本地分支
 git branch -d test
+
+### 拉取远程分支更新本地分支
+（需要确保本地分支处于远程分支log中的某一个）
+git pull origin main
+
+### 回退到某个版本
+git reset --hard 版本号
