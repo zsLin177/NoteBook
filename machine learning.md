@@ -122,7 +122,13 @@ $$
   
 
   在机器学习中，我们需要评估label和predicts之间的差距，使用KL散度刚刚好，即 ![[公式]](https://www.zhihu.com/equation?tex=D_%7BKL%7D%28y%7C%7C%5Ctilde%7By%7D%29) ，由于KL散度中的前一部分−H(y)不变，故在优化过程中，只需要关注交叉熵就可以了。所以一般在机器学习中直接用用交叉熵做loss，评估模型。
-
+  
+## BatchNorm and LayerNorm
+* 首先为什么要Norm：据说可以让加快模型收敛速度，减少训练需要的时间；另外因为经过多重矩阵计算，数值往往会变大，Norm可以归一化，也缓解梯度爆炸之类的。
+* BatchNorm
+  对一个batch中的某一特征维度进行归一化，通常在NLP中不用。因为一个batch中的句子长度不一致，虽然可以pad成相同的长度，但是要和pad的特征进行归一化，这不合理。
+* LayerNorm
+  对一个instance的所有特征维度进行归一化，在NLP中常用，通常是[batch_size, seq_len, dim]中的dim进行归一化。
   
 
   
