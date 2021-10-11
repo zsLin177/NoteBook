@@ -457,5 +457,215 @@ tensor([[[ True,  True,  True,  True, False, False],
          [False, False, False, False,  True,  True],
          [False, False, False, False, False,  True]]])
 ```
-# 取最大的k个值
+## 取最大的k个值
 * torch.topk(input, k, dim)
+
+## transformer、bert、elmo用法记录
+
+### transformer+bert族
+
+* 首先加载对应模型的tokenizer
+
+  ```python
+  from transformers import AutoTokenizer
+  tokenizer = AutoTokenizer.from_pretrained('bert-base-cased')
+  >>> encoded_input = tokenizer("Hello, I'm a single sentence!")
+  >>> print(encoded_input)
+  {'input_ids': [101, 138, 18696, 155, 1942, 3190, 1144, 1572, 13745, 1104, 159, 9664, 2107, 102],
+   'token_type_ids': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+   'attention_mask': [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]}
+  >>> tokenizer.decode(encoded_input["input_ids"])
+  "[CLS] Hello, I'm a single sentence! [SEP]"
+  
+  # tokenizer是直接对一整个句子进行tokenize并返回id（会加上cls和sep），如果需要对单个词进行tokenize推荐下面这种：先tokenize，再id
+  >>> t('Hello-you')
+  ['Hello', '-', 'you']
+  >>> [dic[token] for token in  t('Hello-you')]
+  [8667, 118, 1128]
+  
+  # 一次性处理多个句子，但是发现
+  >>> batch_sentences = ["Hello I'm a single sentence",
+  ...                    "And another sentence",
+  ...                    "And the very very last one"]
+  >>> encoded_inputs = tokenizer(batch_sentences)
+  >>> print(encoded_inputs)
+  {'input_ids': [[101, 8667, 146, 112, 182, 170, 1423, 5650, 102],
+                 [101, 1262, 1330, 5650, 102],
+                 [101, 1262, 1103, 1304, 1304, 1314, 1141, 102]],
+   'token_type_ids': [[0, 0, 0, 0, 0, 0, 0, 0, 0],
+                      [0, 0, 0, 0, 0],
+                      [0, 0, 0, 0, 0, 0, 0, 0]],
+   'attention_mask': [[1, 1, 1, 1, 1, 1, 1, 1, 1],
+                      [1, 1, 1, 1, 1],
+                      [1, 1, 1, 1, 1, 1, 1, 1]]}
+  
+  # 一个batch返回相同长度的句子，且是tensor
+  >>> batch = tokenizer(batch_sentences, padding=True, truncation=True, return_tensors="pt")
+  >>> print(batch)
+  {'input_ids': tensor([[ 101, 8667,  146,  112,  182,  170, 1423, 5650,  102],
+                        [ 101, 1262, 1330, 5650,  102,    0,    0,    0,    0],
+                        [ 101, 1262, 1103, 1304, 1304, 1314, 1141,  102,    0]]),
+   'token_type_ids': tensor([[0, 0, 0, 0, 0, 0, 0, 0, 0],
+                             [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                             [0, 0, 0, 0, 0, 0, 0, 0, 0]]),
+   'attention_mask': tensor([[1, 1, 1, 1, 1, 1, 1, 1, 1],
+                             [1, 1, 1, 1, 1, 0, 0, 0, 0],
+                             [1, 1, 1, 1, 1, 1, 1, 1, 0]])}
+  # attention_mask 表明了哪些词是pad的
+  
+  # 处理一对句子：https://huggingface.co/transformers/preprocessing.html
+  ```
+
+* 然后是加载模型
+```python
+    def __init__(self, model, n_layers, n_out=0, stride=256, pooling='mean', pad_index=0, dropout=0, requires_grad=False):
+        super().__init__()
+
+        from transformers import AutoConfig, AutoModel, AutoTokenizer
+        # output_hidden_states=True，返回每一层的隐藏状态.加载模型主要是下面这两句
+        self.bert = AutoModel.from_pretrained(model, config=AutoConfig.from_pretrained(model, output_hidden_states=True))
+        self.bert = self.bert.requires_grad_(requires_grad)
+
+        self.model = model
+        self.n_layers = n_layers or self.bert.config.num_hidden_layers
+        self.hidden_size = self.bert.config.hidden_size
+        self.n_out = n_out or self.hidden_size
+        self.stride = stride
+        self.pooling = pooling
+        self.pad_index = pad_index
+        self.dropout = dropout
+        self.requires_grad = requires_grad
+        self.max_len = int(max(0, self.bert.config.max_position_embeddings) or 1e12) - 2
+
+        self.tokenizer = AutoTokenizer.from_pretrained(model)
+
+        self.scalar_mix = ScalarMix(self.n_layers, dropout)
+        self.projection = nn.Linear(self.hidden_size, self.n_out, False) if self.hidden_size != n_out else nn.Identity()
+        
+    def forward(self, subwords):
+        r"""
+        Args:
+            subwords (~torch.Tensor): ``[batch_size, seq_len, fix_len]``.
+        Returns:
+            ~torch.Tensor:
+                BERT embeddings of shape ``[batch_size, seq_len, n_out]``.
+        """
+
+        mask = subwords.ne(self.pad_index)
+        lens = mask.sum((1, 2))
+        # [batch_size, n_subwords], 下面的两步可以直接把词级别的变为句子级别，参考上一点（说明bert的输入还是按照一句话输入的）
+        subwords = pad(subwords[mask].split(lens.tolist()), self.pad_index, padding_side=self.tokenizer.padding_side)
+        bert_mask = pad(mask[mask].split(lens.tolist()), 0, padding_side=self.tokenizer.padding_side)
+
+        # return the hidden states of all layers
+        bert = self.bert(subwords[:, :self.max_len], attention_mask=bert_mask[:, :self.max_len].float())[-1]
+        # [n_layers, batch_size, max_len, hidden_size]
+        bert = bert[-self.n_layers:]
+        # [batch_size, max_len, hidden_size]
+        bert = self.scalar_mix(bert)
+        # [batch_size, n_subwords, hidden_size], 这一步就是把长的句子当成多个句子编码
+        for i in range(self.stride, (subwords.shape[1]-self.max_len+self.stride-1)//self.stride*self.stride+1, self.stride):
+            part = self.bert(subwords[:, i:i+self.max_len], attention_mask=bert_mask[:, i:i+self.max_len].float())[-1]
+            bert = torch.cat((bert, self.scalar_mix(part[-self.n_layers:])[:, self.max_len-self.stride:]), 1)
+
+        # [batch_size, seq_len]
+        bert_lens = mask.sum(-1)
+        bert_lens = bert_lens.masked_fill_(bert_lens.eq(0), 1)
+        # [batch_size, seq_len, fix_len, hidden_size]
+        embed = bert.new_zeros(*mask.shape, self.hidden_size).masked_scatter_(mask.unsqueeze(-1), bert[bert_mask])
+        # [batch_size, seq_len, hidden_size]
+        if self.pooling == 'first':
+            embed = embed[:, :, 0]
+        elif self.pooling == 'last':
+            embed = embed.gather(2, (bert_lens-1).unsqueeze(-1).repeat(1, 1, self.hidden_size).unsqueeze(2)).squeeze(2)
+        else:
+            embed = embed.sum(2) / bert_lens.unsqueeze(-1)
+        embed = self.projection(embed)
+
+        return embed
+```
+
+### elmo
+
+elmo现在用的比较少，这里仅记录了最简单的用法
+
+* 首先是elmo的tokenize (直接对词进行操作，没有subword)
+
+  ```python
+  from allennlp.modules.elmo import batch_to_ids
+  class ElmoField(Field):
+      def build(self, dataset, min_freq=1, embed=None):
+          return
+  
+      def transform(self, sequences):
+          # sequences = [
+          #         ['<bos>'] + list(sequence) for sequence in sequences
+          #     ]
+          if self.lower:
+              sequences = [
+                  list(map(str.lower, sequence)) for sequence in sequences
+              ]
+          return sequences
+  
+      def compose(self, sequences):
+          # Composes a batch of sequences into a padded tensor.
+          return batch_to_ids(sequences).to(self.device)
+  ```
+
+* 然后是模型
+
+  ```python
+  class Elmo(allennlp.modules.elmo.Elmo):
+      def __init__(self, layer=3, dropout=0.33, if_requires_grad=False):
+          """
+  
+          Args:
+              layer (int):
+              dropout (float):
+          """
+          self.scalar_mix_parameters = []
+          for i in range(layer):
+              tmp_lst = [-9e10, -9e10, -9e10]
+              tmp_lst[i] = 1.0
+              self.scalar_mix_parameters.append(tmp_lst)
+  
+          super(Elmo, self).__init__(options_file="data/ELMO/options.json",
+                                     weight_file="data/ELMO/weights.hdf5",
+                                     num_output_representations=layer,
+                                     requires_grad=if_requires_grad,
+                                     keep_sentence_boundaries=True,
+                                     scalar_mix_parameters=self.scalar_mix_parameters,
+                                     dropout=dropout)
+          self.n_layers = layer
+          self.dropout_rate = dropout
+          self.if_requires_grad = if_requires_grad
+          self.gamma = nn.Parameter(torch.FloatTensor([1.0]))
+          self.softmax_weights = nn.ParameterList([nn.Parameter(torch.FloatTensor([0.0])) for _ in range(layer)])
+          # self.reset_parameters()
+  
+      # def reset_parameters(self):
+      #     nn.init.normal_(self.softmax.weight, 0.0, 0.01)  # softmax layer
+  
+      def forward(self, chars, word_inputs=None):
+          """
+  
+          Args:
+              chars:
+              word_inputs:
+  
+          Returns:
+  
+          """
+          normed_weights = F.softmax(torch.cat([param for param in self.softmax_weights]), dim=0)
+          normed_weights = torch.split(normed_weights, 1)
+          # pdb.set_trace()
+          res = super(Elmo, self).forward(chars)['elmo_representations']
+          final = normed_weights[0] * res[0]
+          for i in range(1, self.n_layers):
+              final += (normed_weights[i] * res[i])
+          final = self.gamma * final
+          return final[:, :-1]
+  ```
+
+  
+
