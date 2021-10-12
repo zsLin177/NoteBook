@@ -8,3 +8,23 @@ ln -s src_path tgt_path
 * find /tmp -atime +21 -and -size +10G
 * find . -type f -name '*.php' | xargs grep "include"
 * find /var/logs -maxdepth 1 -mtime +7 -ok rm {} \\;
+
+## 设置代理
+这里只介绍用科学上网工具clash挂代理
+* 在本地电脑查看端口，打开LAN
+<img src="C:\Users\84277\AppData\Roaming\Typora\typora-user-images\image-20211012160316595.png" alt="image-20211012160316595" style="zoom:50%;" />
+
+* 在linux设置代理
+
+  export http_proxy=http://本地电脑ip:7890
+
+  export https_proxy=http://本地电脑ip:7890
+
+  export ftp_proxy=http://本地电脑:7890
+
+  (有root权限的可以把上面三行加到**/etc/profile** 末尾，然后**source /etc/profile**；没有权限的就只能在终端设置临时变量了，之后可能是多词设置)
+
+* 注意git remote url要确保是使用的是http协议地址，如：https://github.com/zsLin177/repository.git
+  
+
+  
