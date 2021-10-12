@@ -26,3 +26,6 @@ git pull origin main
 
 ### 回退到某个版本
 git reset --hard 版本号
+
+### 重新设置远程仓库地址
+git remote set-url origin new_address
