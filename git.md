@@ -9,7 +9,10 @@
 
 ### 创建新的分支
 * 创建并切换到新分支，新分支的代码就是当前分支的代码
-git checkout -b span-based
+  git checkout -b span-based
+
+### push本地新分支到远程仓库
+git push origin mtl-span-info:mtl-span-info
 
 ### 列出所有远程分支
 git branch -r
@@ -23,6 +26,14 @@ git branch -d test
 ### 拉取远程分支更新本地分支
 （需要确保本地分支处于远程分支log中的某一个）
 git pull origin main
+
+### git重新命名本地分支
+* 如果对于分支不是当前分支，可以使用下面代码：
+  git branch -m "原分支名" "新分支名"
+
+* 如果是当前，那么：
+
+  git branch -m "新分支名称"
 
 ### 回退到某个版本
 git reset --hard 版本号
