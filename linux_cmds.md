@@ -12,7 +12,7 @@ ln -s src_path tgt_path
 ## 设置代理
 这里只介绍用科学上网工具clash挂代理
 * 在本地电脑查看端口，打开LAN
-<img src="imgs/clash_proxy.png" alt="image-20211012160316595" style="zoom:20%;" />
+<img src="imgs/clash_proxy.png" alt="image-20211012160316595" style="zoom:50%;" />
 
 * 在linux设置代理
 
