@@ -12,7 +12,7 @@ ln -s src_path tgt_path
 ## 设置代理
 这里只介绍用科学上网工具clash挂代理
 * 在本地电脑查看端口，打开LAN
-<img src="C:\Users\84277\AppData\Roaming\Typora\typora-user-images\image-20211012160316595.png" alt="image-20211012160316595" style="zoom:50%;" />
+<img src="imgs/clash_proxy.png" alt="image-20211012160316595" style="zoom:50%;" />
 
 * 在linux设置代理
 
@@ -26,5 +26,4 @@ ln -s src_path tgt_path
 
 * 注意git remote url要确保是使用的是http协议地址，如：https://github.com/zsLin177/repository.git
   
-
   
