@@ -669,16 +669,16 @@ elmo现在用的比较少，这里仅记录了最简单的用法
 
   ## find the indces of all elements of c in a
   ```python
-  >>> a
-tensor([[1, 2],
-        [3, 4],
-        [5, 6]])
->>> c
-tensor([[1, 2],
-        [5, 6]])
-values, indices = torch.topk(((a.t() == c.unsqueeze(-1)).all(dim=1)).int(), 1, 1)
-indices = indices[values!=0]
->>> indices
-tensor([0, 2])
+    >>> a
+    tensor([[1, 2],
+          [3, 4],
+          [5, 6]])
+    >>> c
+    tensor([[1, 2],
+          [5, 6]])
+    values, indices = torch.topk(((a.t() == c.unsqueeze(-1)).all(dim=1)).int(), 1, 1)
+    indices = indices[values!=0]
+    >>> indices
+    tensor([0, 2])
   ```
 
