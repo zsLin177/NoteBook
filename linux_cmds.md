@@ -27,6 +27,6 @@ ln -s src_path tgt_path
 * 注意git remote url要确保是使用的是http协议地址，如：https://github.com/zsLin177/repository.git
 
 ## wget
-* 后台下载并断点续传: 
+* 后台下载并断点续传: wget -b -c url
   
   
