@@ -25,5 +25,8 @@ ln -s src_path tgt_path
   (有root权限的可以把上面三行加到**/etc/profile** 末尾，然后**source /etc/profile**；没有权限的就只能在终端设置临时变量了，之后可能是多词设置)
 
 * 注意git remote url要确保是使用的是http协议地址，如：https://github.com/zsLin177/repository.git
+
+## wget
+* 后台下载并断点续传: 
   
   
