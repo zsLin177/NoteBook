@@ -43,3 +43,6 @@ git log
 
 ### 重新设置远程仓库地址
 git remote set-url origin new_address
+
+### 添加远程仓库地址
+git remote add origin xxx.git
