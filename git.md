@@ -23,6 +23,9 @@ git checkout -b dev origin/dev
 ### 删除本地分支
 git branch -d test 或者强制删除：-D
 
+### 删除远程分支
+git push origin --delete test
+
 ### 拉取远程分支更新本地分支
 （需要确保本地分支处于远程分支log中的某一个）
 git pull origin main
