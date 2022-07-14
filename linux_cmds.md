@@ -29,4 +29,6 @@ ln -s src_path tgt_path
 ## wget
 * 后台下载并断点续传: wget -b -c url
   
+## zip
+zip -vr data.zip data/
   
