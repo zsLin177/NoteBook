@@ -31,4 +31,8 @@ ln -s src_path tgt_path
   
 ## zip
 zip -vr data.zip data/
+
+## conda 修改镜像源
+* 修改~/.condarc为：
+<img src="imgs/clash_proxy.png" alt="image-20211012160316595" style="zoom:50%;" />
   
