@@ -34,5 +34,5 @@ zip -vr data.zip data/
 
 ## conda 修改镜像源
 * 修改~/.condarc为：
-<img src="截屏2022-08-13 10.21.50.png" alt="image-2" style="zoom:80%;" />
+<img src="imgs/conda_src.png" alt="image-2" style="zoom:80%;" />
   
