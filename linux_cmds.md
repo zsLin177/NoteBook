@@ -39,7 +39,4 @@ zip -vr data.zip data/
 ## 创建密钥
 * ssh-keygen -t rsa -b 4096 -C "你的邮箱地址"
 * 保存路径不要和之前的id_rsa覆盖
-
-ssh-keygen -t rsa -b 4096 -C "你的邮箱地址"保存
-ssh-keygen -t rsa -b 4096 -C "你的邮箱地址"
   
