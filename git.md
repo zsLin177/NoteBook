@@ -49,3 +49,12 @@ git remote set-url origin new_address
 
 ### 添加远程仓库地址
 git remote add origin xxx.git
+
+### 查看用户配置
+* git config --list --global
+* git config --list --local
+
+### 设置用户名和邮箱
+* git config --local user.name "name"
+* git config --local user.name "xxx@xxx"
+* git config --global user.name "name"
