@@ -8,8 +8,10 @@
 	ssh-add ~/.ssh/id_rsa
 
 ### 创建新的分支
-* 创建并切换到新分支，新分支的代码就是当前分支的代码
+* 创建并切换到新分支，新分支的代码就是当前分支的代码，且新分支的历史和当前分支一致
   git checkout -b span-based
+* 创建新分支，新分支的代码就是当前分支的代码，但是历史为空
+  git checkout --orphan 
 
 ### push本地新分支到远程仓库
 git push origin mtl-span-info:mtl-span-info
