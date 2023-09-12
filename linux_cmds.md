@@ -39,4 +39,17 @@ zip -vr data.zip data/
 ## 创建密钥
 * ssh-keygen -t rsa -b 4096 -C "你的邮箱地址"
 * 保存路径不要和之前的id_rsa覆盖
+
+## 杀死僵尸进程
+因为使用PyTorch设置多线程进行数据读取，其实是假的多线程，他是开了N个子进程（PID都连着）进行模拟多线程工作，所以你的程序跑完或者中途kill掉主进程的话，子进程的GPU显存并不会被释放，需要手动一个一个kill才行，具体方法描述如下：
+```shell
+fuser -v /dev/nvidia*
+# 使用下属命令一句话杀死所有进程
+fuser -v /dev/nvidia* |awk '{for(i=1;i<=NF;i++)print "kill -9 " $i;}' | sh
+# 如果只想关闭掉某张显卡上的驻留进程，如0号nvidia显卡，那么命令为:
+fuser -v /dev/nvidia0 |awk '{for(i=1;i<=NF;i++)print "kill -9 " $i;}' | sh
+# 关闭掉1号显卡上所有的驻留进程：
+fuser -v /dev/nvidia1 |awk '{for(i=1;i<=NF;i++)print "kill -9 " $i;}' | sh
+```
+
   
