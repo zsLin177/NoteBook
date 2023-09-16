@@ -20,7 +20,9 @@ git push origin mtl-span-info:mtl-span-info
 git branch -r
 
 ### 拉取远程分支并在本地创建新分支
-git checkout -b dev origin/dev
+* git checkout -b dev origin/dev
+* git fetch origin remote-branch-name:local-branch-name
+
 
 ### 删除本地分支
 git branch -d test 或者强制删除：-D
