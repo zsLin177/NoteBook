@@ -62,3 +62,6 @@ git remote add origin xxx.git
 * git config --local user.name "name"
 * git config --local user.name "xxx@xxx"
 * git config --global user.name "name"
+
+### huggingface-cli 上传到huggingface仓库
+* huggingface-cli upload zsLin/Sea . . --token=xxxx --exclude "*.pt" "*.pth" "*.bin" "trainer_state.json"
